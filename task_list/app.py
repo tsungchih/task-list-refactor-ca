@@ -1,5 +1,5 @@
+from task_list.application.domain.model.task import Task, TaskId
 from task_list.console import Console
-from task_list.task import Task
 
 
 class TaskList:
@@ -37,7 +37,7 @@ class TaskList:
         for project, tasks in self.tasks.items():
             self.console.print(project)
             for task in tasks:
-                self.console.print(f"  [{'x' if task.is_done() else ' '}] {task.id}: {task.description}")
+                self.console.print(f"  [{'x' if task.is_done() else ' '}] {task.entity_id}: {task.description}")
             self.console.print()
 
     def add(self, command_line: str) -> None:
@@ -58,22 +58,21 @@ class TaskList:
             self.console.print(f"Could not find a project with the name {project}.")
             self.console.print()
             return
-        project_tasks.append(Task(self.next_id(), description, False))
+        project_tasks.append(Task(entity_id=self.next_id(), description=description, done=False))
 
-    def check(self, id_string: str) -> None:
-        self.set_done(id_string, True)
+    def check(self, task_id: str) -> None:
+        self.set_done(TaskId(value=task_id), True)
 
-    def uncheck(self, id_string: str) -> None:
-        self.set_done(id_string, False)
+    def uncheck(self, task_id: str) -> None:
+        self.set_done(TaskId(value=task_id), False)
 
-    def set_done(self, id_string: str, done: bool) -> None:
-        id_ = int(id_string)
+    def set_done(self, task_id: TaskId, done: bool) -> None:
         for _, tasks in self.tasks.items():
             for task in tasks:
-                if task.id == id_:
+                if task.entity_id == task_id:
                     task.set_done(done)
                     return
-        self.console.print(f"Could not find a task with an ID of {id_}")
+        self.console.print(f"Could not find a task with an ID of {task_id}")
         self.console.print()
 
     def help(self) -> None:
@@ -89,6 +88,6 @@ class TaskList:
         self.console.print(f"I don't know what the command {command} is.")
         self.console.print()
 
-    def next_id(self) -> int:
+    def next_id(self) -> TaskId:
         self.last_id += 1
-        return self.last_id
+        return TaskId(value=str(self.last_id))
