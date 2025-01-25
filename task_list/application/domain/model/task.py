@@ -1,5 +1,5 @@
 from pydantic import Field
-from task_list.application.domain.model import Entity, ValueObject
+from task_list.application.domain.model.base import Entity, ValueObject
 
 
 class TaskId(ValueObject):
