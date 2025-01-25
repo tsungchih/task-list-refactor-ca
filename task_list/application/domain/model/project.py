@@ -1,5 +1,3 @@
-from contextlib import suppress
-
 from pydantic import Field
 from task_list.application.domain.model.base import Entity, ValueObject
 from task_list.application.domain.model.task import Task, TaskId
@@ -19,7 +17,15 @@ class Project(Entity[ProjectName]):
         self.tasks.append(task)
 
     def has_task(self, task_id: TaskId) -> bool:
-        task = None
-        with suppress(StopIteration):
+        return self.get_task(task_id=task_id) is not None
+
+    def get_task(self, task_id: TaskId) -> Task | None:
+        try:
             task = next(filter(lambda task: task.entity_id == task_id, self.tasks))
-        return task is None
+        except StopIteration:
+            return None
+        return task
+
+    def set_task_done(self, task_id: TaskId, done: bool) -> None:
+        if task := self.get_task(task_id=task_id):
+            task.set_done(done=done)
