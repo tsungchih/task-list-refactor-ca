@@ -1,14 +1,15 @@
+from task_list.application.domain.model import ProjectName, TaskId, ToDoList, ToDoListId
 from task_list.console import Console
-from task_list.task import Task
 
 
 class TaskList:
     QUIT = "quit"
+    DEFAULT_TODO_LIST_ID = "001"
 
     def __init__(self, console: Console) -> None:
         self.console = console
         self.last_id: int = 0
-        self.tasks: dict[str, list[Task]] = {}
+        self.todo_list: ToDoList = ToDoList(entity_id=ToDoListId(value=self.DEFAULT_TODO_LIST_ID))
 
     def run(self) -> None:
         while True:
@@ -34,47 +35,37 @@ class TaskList:
             self.error(command)
 
     def show(self) -> None:
-        for project, tasks in self.tasks.items():
-            self.console.print(project)
-            for task in tasks:
-                self.console.print(f"  [{'x' if task.is_done() else ' '}] {task.id}: {task.description}")
+        for project in self.todo_list.projects:
+            self.console.print(str(project.entity_id))
+            for task in project.tasks:
+                self.console.print(f"  [{'x' if task.is_done() else ' '}] {task.entity_id}: {task.description}")
             self.console.print()
 
     def add(self, command_line: str) -> None:
         sub_command_rest = command_line.split(" ", 1)
         sub_command = sub_command_rest[0]
         if sub_command == "project":
-            self.add_project(sub_command_rest[1])
+            self.add_project(ProjectName(value=sub_command_rest[1]))
         elif sub_command == "task":
             project_task = sub_command_rest[1].split(" ", 1)
-            self.add_task(project_task[0], project_task[1])
+            self.add_task(ProjectName(value=project_task[0]), project_task[1])
 
-    def add_project(self, name: str) -> None:
-        self.tasks[name] = []
+    def add_project(self, project_name: ProjectName) -> None:
+        self.todo_list.add_project(project_name)
 
-    def add_task(self, project: str, description: str) -> None:
-        project_tasks = self.tasks.get(project)
-        if project_tasks is None:
-            self.console.print(f"Could not find a project with the name {project}.")
+    def add_task(self, project_name: ProjectName, description: str) -> None:
+        project = self.todo_list.get_project(project_name)
+        if project is None:
+            self.console.print(f"Could not find a project with the name {project_name}.")
             self.console.print()
             return
-        project_tasks.append(Task(self.next_id(), description, False))
+        self.todo_list.add_task(project_name=project_name, description=description)
 
-    def check(self, id_string: str) -> None:
-        self.set_done(id_string, True)
+    def check(self, task_id: str) -> None:
+        self.todo_list.set_done(task_id=TaskId(value=task_id), done=True)
 
-    def uncheck(self, id_string: str) -> None:
-        self.set_done(id_string, False)
-
-    def set_done(self, id_string: str, done: bool) -> None:
-        id_ = int(id_string)
-        for _, tasks in self.tasks.items():
-            for task in tasks:
-                if task.id == id_:
-                    task.set_done(done)
-                    return
-        self.console.print(f"Could not find a task with an ID of {id_}")
-        self.console.print()
+    def uncheck(self, task_id: str) -> None:
+        self.todo_list.set_done(task_id=TaskId(value=task_id), done=False)
 
     def help(self) -> None:
         self.console.print("Commands:")
@@ -88,7 +79,3 @@ class TaskList:
     def error(self, command: str) -> None:
         self.console.print(f"I don't know what the command {command} is.")
         self.console.print()
-
-    def next_id(self) -> int:
-        self.last_id += 1
-        return self.last_id
