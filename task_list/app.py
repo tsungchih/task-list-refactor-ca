@@ -1,5 +1,5 @@
 from task_list.application.domain.model import ProjectName, TaskId, ToDoList, ToDoListId
-from task_list.application.domain.service import ShowService
+from task_list.application.domain.service import HelpService, ShowService
 from task_list.console import Console
 
 
@@ -31,7 +31,7 @@ class TaskList:
         elif command == "uncheck":
             self.uncheck(command_rest[1])
         elif command == "help":
-            self.help()
+            HelpService(console=self.console).help()
         else:
             self.error(command)
 
@@ -60,15 +60,6 @@ class TaskList:
 
     def uncheck(self, task_id: str) -> None:
         self.todo_list.set_done(task_id=TaskId(value=task_id), done=False)
-
-    def help(self) -> None:
-        self.console.print("Commands:")
-        self.console.print("  show")
-        self.console.print("  add project <project name>")
-        self.console.print("  add task <project name> <task description>")
-        self.console.print("  check <task ID>")
-        self.console.print("  uncheck <task ID>")
-        self.console.print()
 
     def error(self, command: str) -> None:
         self.console.print(f"I don't know what the command {command} is.")
