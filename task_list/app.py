@@ -1,5 +1,5 @@
 from task_list.application.domain.model import TaskId, ToDoList, ToDoListId
-from task_list.application.domain.service import AddService, ErrorService, HelpService, ShowService
+from task_list.application.domain.service import AddService, ErrorService, HelpService, SetDoneService, ShowService
 from task_list.console import Console
 
 
@@ -36,7 +36,7 @@ class TaskList:
             ErrorService(console=self.console).error(command)
 
     def check(self, task_id: str) -> None:
-        self.todo_list.set_done(task_id=TaskId(value=task_id), done=True)
+        SetDoneService(todo_list=self.todo_list).set_done(task_id=TaskId(value=task_id), done=True)
 
     def uncheck(self, task_id: str) -> None:
-        self.todo_list.set_done(task_id=TaskId(value=task_id), done=False)
+        SetDoneService(todo_list=self.todo_list).set_done(task_id=TaskId(value=task_id), done=False)
