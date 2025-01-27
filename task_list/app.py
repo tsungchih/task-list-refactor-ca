@@ -1,4 +1,5 @@
 from task_list.application.domain.model import ProjectName, TaskId, ToDoList, ToDoListId
+from task_list.application.domain.service import ShowService
 from task_list.console import Console
 
 
@@ -22,7 +23,7 @@ class TaskList:
         command_rest = command_line.split(" ", 1)
         command = command_rest[0]
         if command == "show":
-            self.show()
+            ShowService(todo_list=self.todo_list, console=self.console).show()
         elif command == "add":
             self.add(command_rest[1])
         elif command == "check":
@@ -33,13 +34,6 @@ class TaskList:
             self.help()
         else:
             self.error(command)
-
-    def show(self) -> None:
-        for project in self.todo_list.projects:
-            self.console.print(str(project.entity_id))
-            for task in project.tasks:
-                self.console.print(f"  [{'x' if task.is_done() else ' '}] {task.entity_id}: {task.description}")
-            self.console.print()
 
     def add(self, command_line: str) -> None:
         sub_command_rest = command_line.split(" ", 1)
