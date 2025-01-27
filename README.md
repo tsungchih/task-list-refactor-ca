@@ -1,7 +1,10 @@
 # Task List Refactor Based On Clean Architecture In Python
 
 This is a side project aimed at refactor of [Task List Kata](https://kata-log.rocks/task-list-kata) based on Clean
-Architecture in Python.
+Architecture in Python. This side project is inspired by its
+[Java implementation](https://gitlab.com/TeddyChen/refactor-to-ca) throughout the course. The refactor steps are
+referred to the training course taught by [Teddy Chen](https://www.blogger.com/profile/02066842119056439711) not only
+for myself to get familiar with the refactor process but also for someone to learn Clean Architecture.
 
 ## How to set up the development environment?
 
@@ -116,3 +119,13 @@ run `pyright`, a static type checker...........................................P
 run 'black' on Python code blocks in documentation files.......................Passed
 run 'prettier', an opinionated code formatter..................................Passed
 ```
+
+## Steps For Refactor Of Task List Kata Based On Clean Architecture
+
+The steps of the holistic refactor process are recorded and formed as branches listed as follows.
+
+| Branch          | Description                                         |
+| --------------- | :-------------------------------------------------- |
+| refactor/init   | Initialize the Python project using Poetry.         |
+| refactor/step-1 | Add project structure, entities, and value objects. |
+| refactor/step-2 | Extract methods in `TaskList` as services.          |
