@@ -1,5 +1,5 @@
 from task_list.application.domain.model import TaskId, ToDoList, ToDoListId
-from task_list.application.domain.service import AddService, HelpService, ShowService
+from task_list.application.domain.service import AddService, ErrorService, HelpService, ShowService
 from task_list.console import Console
 
 
@@ -33,14 +33,10 @@ class TaskList:
         elif command == "help":
             HelpService(console=self.console).help()
         else:
-            self.error(command)
+            ErrorService(console=self.console).error(command)
 
     def check(self, task_id: str) -> None:
         self.todo_list.set_done(task_id=TaskId(value=task_id), done=True)
 
     def uncheck(self, task_id: str) -> None:
         self.todo_list.set_done(task_id=TaskId(value=task_id), done=False)
-
-    def error(self, command: str) -> None:
-        self.console.print(f"I don't know what the command {command} is.")
-        self.console.print()
